@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
-const CATEGORIES = [' Plushies', 'Keychains', 'Flowers and Plants', 'Accessories', 'Other']
+const CATEGORIES = ['Scooter', 'E-Rickshaw']
 const MAX_IMAGES = 5
 
 export default function ProductForm({ existing, onDone, onCancel }) {
@@ -12,9 +12,13 @@ export default function ProductForm({ existing, onDone, onCancel }) {
   const [available, setAvailable] = useState(existing?.available ?? true)
   const [videoUrl, setVideoUrl] = useState(existing?.video_url || '')
 
-  const [existingImages, setExistingImages] = useState(
-    existing?.image_urls || (existing?.image_url ? [existing.image_url] : [])
-  )
+  const [topSpeed, setTopSpeed] = useState(existing?.top_speed_kmh || '')
+  const [range, setRange] = useState(existing?.range_km || '')
+  const [batteryCapacity, setBatteryCapacity] = useState(existing?.battery_capacity || '')
+  const [chargingTime, setChargingTime] = useState(existing?.charging_time_hours || '')
+  const [colorsText, setColorsText] = useState((existing?.colors || []).join(', '))
+
+  const [existingImages, setExistingImages] = useState(existing?.image_urls || [])
   const [newFiles, setNewFiles] = useState([])
 
   const [saving, setSaving] = useState(false)
@@ -50,17 +54,21 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         const ext = file.name.split('.').pop()
         const path = `${crypto.randomUUID()}.${ext}`
         const { error: uploadError } = await supabase.storage
-          .from('product-images')
+          .from('vehicle-images')
           .upload(path, file)
         if (uploadError) throw uploadError
 
         const { data: publicUrlData } = supabase.storage
-          .from('product-images')
+          .from('vehicle-images')
           .getPublicUrl(path)
         uploadedUrls.push(publicUrlData.publicUrl)
       }
 
       const image_urls = [...existingImages, ...uploadedUrls]
+      const colors = colorsText
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean)
 
       const payload = {
         name,
@@ -69,18 +77,22 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         category,
         available,
         image_urls,
-        image_url: image_urls[0] || null,
         video_url: videoUrl.trim() || null,
+        top_speed_kmh: topSpeed ? Number(topSpeed) : null,
+        range_km: range ? Number(range) : null,
+        battery_capacity: batteryCapacity.trim() || null,
+        charging_time_hours: chargingTime ? Number(chargingTime) : null,
+        colors,
       }
 
       if (existing) {
         const { error: updateError } = await supabase
-          .from('products')
+          .from('vehicle')
           .update(payload)
           .eq('id', existing.id)
         if (updateError) throw updateError
       } else {
-        const { error: insertError } = await supabase.from('products').insert(payload)
+        const { error: insertError } = await supabase.from('vehicle').insert(payload)
         if (insertError) throw insertError
       }
 
@@ -129,13 +141,7 @@ export default function ProductForm({ existing, onDone, onCancel }) {
           {slotsLeft > 0 && (
             <label className="w-20 h-20 flex items-center justify-center border-2 border-dashed border-thread rounded-stitch cursor-pointer bg-white/50 text-ink/40 text-xs text-center px-1">
               + Add
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImagePick}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" multiple onChange={handleImagePick} className="hidden" />
             </label>
           )}
         </div>
@@ -147,7 +153,7 @@ export default function ProductForm({ existing, onDone, onCancel }) {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Sunflower Coaster Set"
+          placeholder="Mantra Urban 100"
           className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
         />
       </div>
@@ -160,7 +166,7 @@ export default function ProductForm({ existing, onDone, onCancel }) {
           min="0"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          placeholder="349"
+          placeholder="89999"
           className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
         />
       </div>
@@ -178,26 +184,73 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         </select>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-body text-ink/70 mb-1">Top speed (km/h)</label>
+          <input
+            type="number"
+            min="0"
+            value={topSpeed}
+            onChange={(e) => setTopSpeed(e.target.value)}
+            placeholder="65"
+            className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-body text-ink/70 mb-1">Range (km)</label>
+          <input
+            type="number"
+            min="0"
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            placeholder="90"
+            className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-body text-ink/70 mb-1">Battery capacity</label>
+        <input
+          value={batteryCapacity}
+          onChange={(e) => setBatteryCapacity(e.target.value)}
+          placeholder="48V 20Ah"
+          className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
+        />
+      </div>
+
+      
+
+      <div>
+        <label className="block text-sm font-body text-ink/70 mb-1">
+          Available colors (comma separated)
+        </label>
+        <input
+          value={colorsText}
+          onChange={(e) => setColorsText(e.target.value)}
+          placeholder="Red, Black, White"
+          className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
+        />
+      </div>
+
       <div>
         <label className="block text-sm font-body text-ink/70 mb-1">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          placeholder="Hand-crocheted, set of 4, cotton yarn..."
+          placeholder="Additional details about the vehicle..."
           className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-body text-ink/70 mb-1">
-          Video link (optional)
-        </label>
+        <label className="block text-sm font-body text-ink/70 mb-1">Video link (optional)</label>
         <input
           type="url"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Paste a YouTube or Instagram Reel link"
+          placeholder="Paste a YouTube link"
           className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
         />
       </div>
@@ -215,19 +268,11 @@ export default function ProductForm({ existing, onDone, onCancel }) {
       {error && <p className="text-sm text-madder font-body">{error}</p>}
 
       <div className="flex gap-3 pt-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-3 rounded-stitch border border-thread font-body text-ink/70"
-        >
+        <button type="button" onClick={onCancel} className="flex-1 py-3 rounded-stitch border border-thread font-body text-ink/70">
           Cancel
         </button>
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex-1 py-3 rounded-stitch bg-madder text-wool font-body font-medium disabled:opacity-50"
-        >
-          {saving ? 'Saving...' : existing ? 'Save changes' : 'Add product'}
+        <button type="submit" disabled={saving} className="flex-1 py-3 rounded-stitch bg-madder text-wool font-body font-medium disabled:opacity-50">
+          {saving ? 'Saving...' : existing ? 'Save changes' : 'Add vehicle'}
         </button>
       </div>
     </form>
