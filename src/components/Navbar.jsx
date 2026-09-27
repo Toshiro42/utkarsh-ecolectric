@@ -28,7 +28,7 @@ export default function Navbar() {
                         ))}
                     </nav>
 
-                    <button onClick={() => setOpen(true)} className="md:hidden text-ink text-2xl leading-none" aria-label="Open menu">☰</button>
+                    <button onClick={() => setOpen(true)} className="md:hidden text-ink text-2xl leading-none mt-4" aria-label="Open menu">☰</button>
                 </div>
             </header>
 
