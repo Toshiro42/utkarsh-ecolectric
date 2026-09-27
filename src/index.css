@@ -19,6 +19,35 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+input,
+select,
+textarea {
+  color: #0A0F0C;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6B7A72;
+  opacity: 0.85;
+}
+
+@keyframes spec-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spec-highlight {
+  animation: spec-rise 560ms ease-out both;
+  animation-delay: var(--spec-delay, 0ms);
+}
+
 .catalogue-header {
   position: relative;
   z-index: 1;

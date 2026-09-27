@@ -36,7 +36,7 @@ export default function ContactUs() {
                         href={`tel:${waNumber}`}
                         className="flex items-center gap-4 bg-mustard border border-thread rounded-stitch p-5 hover:border-madder transition-colors"
                     >
-                        <FaPhone className="text-2xl text-madder shrink-0" />
+                        <FaPhone className="text-2xl text-madder shrink-0 rotate-90" />
                         <div>
                             <p className="font-body text-sm text-sage">Call</p>
                             <p className="font-body text-base font-medium">{phoneDisplay}</p>

@@ -11,7 +11,7 @@ export default function Catalogue() {
   useEffect(() => {
     async function fetchProducts() {
       const { data, error } = await supabase
-        .from('products')
+        .from('vehicle')
         .select('*')
         .eq('available', true)
         .order('created_at', { ascending: false })
@@ -31,8 +31,8 @@ export default function Catalogue() {
   return (
     <div className="catalogue-page min-h-screen bg-wool text-ink">
       <Navbar />
-      
-      
+
+
 
       <nav className="relative z-10 max-w-6xl mx-auto px-5 pt-7 sm:px-8 sm:pt-9">
         <div className="flex flex-col gap-4 border-b border-thread/70 pb-5 sm:flex-row sm:items-center sm:justify-between">

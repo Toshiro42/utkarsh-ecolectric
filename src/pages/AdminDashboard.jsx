@@ -84,7 +84,7 @@ export default function AdminDashboard() {
         {vehicles.map((v) => (
           <div
             key={v.id}
-            className="flex items-center gap-4 bg-white/60 border border-thread rounded-stitch p-3"
+            className="flex items-center gap-4 bg-[#F5F7F6] border border-thread rounded-stitch p-3 shadow-sm"
           >
             <div className="w-16 h-16 shrink-0 bg-thread/30 rounded-stitch overflow-hidden">
               {v.image_urls?.[0] && (
@@ -92,15 +92,17 @@ export default function AdminDashboard() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-display text-base text-ink truncate">{v.name}</p>
-              <p className="text-sm font-body text-ink/60">
+              <p className="font-display text-base text-wool truncate">{v.name}</p>
+              <p className="text-sm font-body text-wool/60">
                 ₹{v.price} · {v.category} {!v.available && '· hidden'}
               </p>
-              {(v.range_km || v.top_speed_kmh) && (
-                <p className="text-xs font-body text-ink/40">
-                  {v.range_km ? `${v.range_km} km range` : ''}
-                  {v.range_km && v.top_speed_kmh ? ' · ' : ''}
-                  {v.top_speed_kmh ? `${v.top_speed_kmh} km/h top speed` : ''}
+              {(v.specifications?.top_speed || v.specifications?.range || v.specifications?.battery_type) && (
+                <p className="text-xs font-body text-wool/50">
+                  {v.specifications.top_speed ? `${v.specifications.top_speed} km/h` : ''}
+                  {v.specifications.top_speed && v.specifications.range ? ' · ' : ''}
+                  {v.specifications.range ? `${v.specifications.range} km` : ''}
+                  {(v.specifications.top_speed || v.specifications.range) && v.specifications.battery_type ? ' · ' : ''}
+                  {v.specifications.battery_type || ''}
                 </p>
               )}
             </div>
@@ -118,7 +120,7 @@ export default function AdminDashboard() {
                 Delete
               </button>
             </div>
-          </div>  
+          </div>
         ))}
       </main>
     </div>

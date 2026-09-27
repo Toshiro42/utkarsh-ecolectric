@@ -7,7 +7,7 @@ export default function Navbar() {
 
     const links = [
         { label: 'Home', href: '/' },
-        { label: 'Location', href: 'https://maps.google.com/?q=YOUR+SHOP+ADDRESS' },
+        { label: 'Location', href: 'https://maps.app.goo.gl/DRdkmwQ4G3aa3tjG7' },
         { label: 'Contact Us', href: '/contact' },
     ]
 

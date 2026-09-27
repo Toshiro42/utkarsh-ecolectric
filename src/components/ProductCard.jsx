@@ -1,22 +1,20 @@
 import { Link } from 'react-router-dom'
-import { FaWhatsapp, FaInstagram } from 'react-icons/fa'
+import { FaWhatsapp } from 'react-icons/fa'
 
 export default function ProductCard({ product }) {
   const waNumber = import.meta.env.VITE_WHATSAPP_NUMBER
-  const igHandle = import.meta.env.VITE_INSTAGRAM_HANDLE
 
   const waMessage = encodeURIComponent(
     `Hi! I'm interested in the ${product.name} (₹${product.price}).`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
-  const igLink = `https://ig.me/m/${igHandle}`
 
   const image = product.image_urls?.[0] || product.image_url
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-thread/80 bg-white/75 shadow-[0_10px_30px_rgba(101,0,30,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(101,0,30,0.12)]">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-thread/90 bg-thread/70 shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-madder/50 hover:shadow-[0_18px_36px_rgba(93,205,9,0.12)]">
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden bg-thread/30">
+        <div className="relative aspect-[4/3] overflow-hidden bg-wool/70">
           {image ? (
             <img
               src={image}
@@ -40,20 +38,15 @@ export default function ProductCard({ product }) {
             {product.name}
           </h3>
         </Link>
-        {product.description && (
-          <p className="product-description line-clamp-2 font-body text-sm leading-6 text-ink/60">
-            {product.description}
-          </p>
-        )}
         <div className="product-card-meta mt-auto flex items-end justify-between border-t border-thread/70 pt-4">
           <span className="product-card-price font-display text-2xl text-madder">₹{product.price}</span>
         </div>
 
         <div className="product-card-actions flex justify-end gap-2 pt-2">
 
-          <a href={waLink} target="_blank" rel="noopener noreferrer" aria-label="Contact on WhatsApp" title="WhatsApp" className="product-card-action flex min-w-0 flex-1 items-center justify-center rounded-full bg-sage text-wool transition-colors hover:bg-madder"><FaWhatsapp className="text-base" /></a>
+          <Link to={`/product/${product.id}`} aria-label="More details" title="More details" className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-sage text-wool transition-colors hover:bg-madder"><span>More details</span></Link>
 
-          <a href={igLink} target="_blank" rel="noopener noreferrer" aria-label="View on Instagram" title="Instagram" className="product-card-action flex min-w-0 flex-1 items-center justify-center rounded-full border border-madder text-madder transition-colors hover:bg-madder hover:text-wool"><FaInstagram className="text-base" /></a>
+          <a href={waLink} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp" className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-madder text-madder transition-colors hover:bg-madder hover:text-wool"><FaWhatsapp className="text-base" /><span>WhatsApp</span></a>
 
         </div>
       </div>

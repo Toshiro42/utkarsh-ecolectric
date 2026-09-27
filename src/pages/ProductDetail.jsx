@@ -19,6 +19,12 @@ function getYouTubeEmbedUrl(url) {
   return null
 }
 
+function formatSpecificationValue(key, value) {
+  if (key === 'top_speed') return `${value} km/h`
+  if (key === 'range') return `${value} km`
+  return value
+}
+
 export default function ProductDetail() {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
@@ -28,7 +34,7 @@ export default function ProductDetail() {
   useEffect(() => {
     async function fetchProduct() {
       const { data, error } = await supabase
-        .from('products')
+        .from('vehicle')
         .select('*')
         .eq('id', id)
         .single()
@@ -61,6 +67,15 @@ export default function ProductDetail() {
     : product.image_url
       ? [product.image_url]
       : []
+  const displayedImage = images[activeImage]
+
+  function showPreviousImage() {
+    setActiveImage((current) => (current - 1 + images.length) % images.length)
+  }
+
+  function showNextImage() {
+    setActiveImage((current) => (current + 1) % images.length)
+  }
 
   const waNumber = import.meta.env.VITE_WHATSAPP_NUMBER
   const igHandle = import.meta.env.VITE_INSTAGRAM_HANDLE
@@ -71,42 +86,85 @@ export default function ProductDetail() {
   const igLink = `https://ig.me/m/${igHandle}`
 
   const youTubeEmbed = product.video_url ? getYouTubeEmbedUrl(product.video_url) : null
+  const specifications = product.specifications || {}
+  const primarySpecs = [
+    ['top_speed', 'Top speed'],
+    ['range', 'Range'],
+    ['battery_type', 'Battery type'],
+  ].filter(([key]) => specifications[key])
+  const otherSpecs = String(specifications.other_specs || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
 
   return (
     <div className="min-h-screen bg-wool">
-      <div className="max-w-3xl mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-5xl mx-auto px-5 pt-6 pb-16">
         <Link to="/" className="inline-block text-sm font-body text-madder mb-5">
           ← Back to catalogue
         </Link>
 
-        <div className="aspect-square w-full rounded-stitch overflow-hidden bg-thread/30 mb-3">
-          {images.length > 0 ? (
-            <img
-              src={images[activeImage]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-ink/30 font-display">
-              no photo yet
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-start mb-8">
+          <section aria-label="Product detail photos">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-stitch bg-[#F4F5F1]">
+              {displayedImage ? (
+                <img key={displayedImage} src={displayedImage} alt={product.name} className="h-full w-full object-contain p-5 sm:p-10" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center font-display text-ink/30">no photo yet</div>
+              )}
+              {images.length > 1 && (
+                <>
+                  <span className="absolute inset-y-0 left-3 flex items-center">
+                    <button type="button" onClick={showPreviousImage} aria-label="Previous product photo" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-wool/80 pb-0.5 text-2xl leading-none text-ink hover:bg-madder hover:text-wool">‹</button>
+                  </span>
+                  <span className="absolute inset-y-0 right-3 flex items-center">
+                    <button type="button" onClick={showNextImage} aria-label="Next product photo" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-wool/80 pb-0.5 text-2xl leading-none text-ink hover:bg-madder hover:text-wool">›</button>
+                  </span>
+                </>
+              )}
             </div>
-          )}
-        </div>
+            {images.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                {images.map((url, index) => (
+                  <button key={url} type="button" onClick={() => setActiveImage(index)} className={`h-20 w-24 shrink-0 overflow-hidden rounded-stitch border-2 bg-thread/30 ${index === activeImage ? 'border-madder' : 'border-transparent'}`}>
+                    <img src={url} alt="" className="h-full w-full object-contain" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
 
-        {images.length > 1 && (
-          <div className="flex gap-2 mb-6 overflow-x-auto">
-            {images.map((url, i) => (
-              <button
-                key={url}
-                onClick={() => setActiveImage(i)}
-                className={`w-16 h-16 shrink-0 rounded-stitch overflow-hidden border-2 ${i === activeImage ? 'border-madder' : 'border-transparent'
-                  }`}
-              >
-                <img src={url} alt="" className="w-full h-full object-cover" />
-              </button>
-            ))}
+          <div className="min-w-0">
+            <div className="mb-8">
+              <span className="inline-block text-xs uppercase tracking-wide text-madder bg-mustard/50 px-2.5 py-1 rounded-full font-body font-semibold mb-2">
+                {product.category}
+              </span>
+              <h1 className="font-display text-2xl sm:text-3xl text-ink mb-2">{product.name}</h1>
+              <p className="font-display text-2xl text-madder font-medium mb-4">₹{product.price}</p>
+            </div>
+
+            {primarySpecs.length > 0 && (
+              <aside className="grid gap-3 sm:grid-cols-3" aria-label="Product specifications">
+                {primarySpecs.map(([key, label], index) => (
+                  <div key={key} className="spec-highlight min-w-0 border-l-2 border-madder/70 bg-thread/30 px-4 py-4" style={{ '--spec-delay': `${index * 90}ms` }}>
+                    <span className="block font-body text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/45">{label}</span>
+                    <strong className="mt-2 block break-words font-display text-base leading-snug text-ink">{formatSpecificationValue(key, specifications[key])}</strong>
+                  </div>
+                ))}
+              </aside>
+            )}
+            {otherSpecs.length > 0 && (
+              <aside className="mt-6" aria-label="Other specifications">
+                <p className="mb-3 font-body text-[10px] font-semibold uppercase tracking-[0.18em] text-madder">Other specifications</p>
+                <ul className="grid gap-x-5 gap-y-2 sm:grid-cols-2">
+                  {otherSpecs.map((spec) => (
+                    <li key={spec} className="border-b border-thread/70 py-2 font-body text-sm text-ink/75">{spec}</li>
+                  ))}
+                </ul>
+              </aside>
+            )}
           </div>
-        )}
+        </div>
 
         {youTubeEmbed && (
           <div className="aspect-video w-full rounded-stitch overflow-hidden mb-6">
@@ -131,14 +189,8 @@ export default function ProductDetail() {
           </a>
         )}
 
-        <span className="inline-block text-xs uppercase tracking-wide text-madder bg-mustard/50 px-2.5 py-1 rounded-full font-body font-semibold mb-2">
-          {product.category}
-        </span>
-        <h1 className="font-display text-2xl sm:text-3xl text-ink mb-2">{product.name}</h1>
-        <p className="font-display text-2xl text-madder font-medium mb-4">₹{product.price}</p>
-
         {product.description && (
-          <p className="font-body text-ink/70 leading-relaxed mb-8 whitespace-pre-line">
+          <p className="mb-8 font-body leading-relaxed text-ink/70 whitespace-pre-line">
             {product.description}
           </p>
         )}
@@ -148,18 +200,11 @@ export default function ProductDetail() {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 text-sm font-body font-medium bg-sage text-white rounded-stitch py-3 hover:opacity-90 transition-opacity"
+            className="flex-1 flex items-center justify-center gap-2 text-sm font-body font-medium bg-madder text-white rounded-stitch py-3 hover:opacity-90 transition-opacity"
           >
             <FaWhatsapp className="text-base" /> Order on WhatsApp
           </a>
-          <a
-            href={igLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 text-sm font-body font-medium bg-madder text-white rounded-stitch py-3 hover:opacity-90 transition-opacity"
-          >
-            <FaInstagram className="text-base" /> Order on Instagram
-          </a>
+          
         </div>
       </div>
     </div>

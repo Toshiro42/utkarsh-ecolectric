@@ -4,6 +4,10 @@ import { supabase } from '../lib/supabaseClient'
 const CATEGORIES = ['Scooter', 'E-Rickshaw']
 const MAX_IMAGES = 5
 
+function removeUnit(value, unit) {
+  return String(value || '').replace(new RegExp(`\\s*${unit}\\s*$`, 'i'), '').trim()
+}
+
 export default function ProductForm({ existing, onDone, onCancel }) {
   const [name, setName] = useState(existing?.name || '')
   const [price, setPrice] = useState(existing?.price || '')
@@ -12,14 +16,12 @@ export default function ProductForm({ existing, onDone, onCancel }) {
   const [available, setAvailable] = useState(existing?.available ?? true)
   const [videoUrl, setVideoUrl] = useState(existing?.video_url || '')
 
-  const [topSpeed, setTopSpeed] = useState(existing?.top_speed_kmh || '')
-  const [range, setRange] = useState(existing?.range_km || '')
-  const [batteryCapacity, setBatteryCapacity] = useState(existing?.battery_capacity || '')
-  const [chargingTime, setChargingTime] = useState(existing?.charging_time_hours || '')
-  const [colorVariants, setColorVariants] = useState(existing?.color_variants || [])
-  const [newColorName, setNewColorName] = useState('')
-  const [newColorFile, setNewColorFile] = useState(null)
-
+  const [specifications, setSpecifications] = useState({
+    top_speed: removeUnit(existing?.specifications?.top_speed, 'km/h'),
+    range: removeUnit(existing?.specifications?.range, 'km'),
+    battery_type: existing?.specifications?.battery_type || '',
+    other_specs: existing?.specifications?.other_specs || '',
+  })
   const [existingImages, setExistingImages] = useState(existing?.image_urls || [])
   const [newFiles, setNewFiles] = useState([])
 
@@ -45,18 +47,8 @@ export default function ProductForm({ existing, onDone, onCancel }) {
     setNewFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  function addColorVariant() {
-    if (!newColorName.trim() || !newColorFile) return
-    setColorVariants((prev) => [
-      ...prev,
-      { color: newColorName.trim(), file: newColorFile, preview: URL.createObjectURL(newColorFile) },
-    ])
-    setNewColorName('')
-    setNewColorFile(null)
-  }
-
-  function removeColorVariant(index) {
-    setColorVariants((prev) => prev.filter((_, i) => i !== index))
+  function updateSpecification(key, value) {
+    setSpecifications((current) => ({ ...current, [key]: value }))
   }
 
   async function handleSubmit(e) {
@@ -82,24 +74,6 @@ export default function ProductForm({ existing, onDone, onCancel }) {
 
       const image_urls = [...existingImages, ...uploadedUrls]
 
-      const uploadedColorVariants = []
-      for (const cv of colorVariants) {
-        if (cv.image_url) {
-          uploadedColorVariants.push({ color: cv.color, image_url: cv.image_url })
-          continue
-        }
-        const ext = cv.file.name.split('.').pop()
-        const path = `${crypto.randomUUID()}.${ext}`
-        const { error: colorUploadError } = await supabase.storage
-          .from('vehicle-images')
-          .upload(path, cv.file)
-        if (colorUploadError) throw colorUploadError
-        const { data: colorPublicUrl } = supabase.storage
-          .from('vehicle-images')
-          .getPublicUrl(path)
-        uploadedColorVariants.push({ color: cv.color, image_url: colorPublicUrl.publicUrl })
-      }
-
       const payload = {
         name,
         price: Number(price),
@@ -108,11 +82,12 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         available,
         image_urls,
         video_url: videoUrl.trim() || null,
-        top_speed_kmh: topSpeed ? Number(topSpeed) : null,
-        range_km: range ? Number(range) : null,
-        battery_capacity: batteryCapacity.trim() || null,
-        charging_time_hours: chargingTime ? Number(chargingTime) : null,
-        color_variants: uploadedColorVariants,
+        specifications: {
+          top_speed: specifications.top_speed.trim(),
+          range: specifications.range.trim(),
+          battery_type: specifications.battery_type.trim(),
+          other_specs: specifications.other_specs.trim(),
+        },
       }
 
       if (existing) {
@@ -139,8 +114,11 @@ export default function ProductForm({ existing, onDone, onCancel }) {
     <form onSubmit={handleSubmit} className="max-w-md mx-auto flex flex-col gap-5 p-6">
       <div>
         <label className="block text-sm font-body text-ink/70 mb-2">
-          Photos (up to {MAX_IMAGES})
+          Product detail photos (up to {MAX_IMAGES})
         </label>
+        <p className="mb-3 font-body text-xs text-ink/50">
+          Add front, side, tyre, handle, dashboard, or other detail photos here.
+        </p>
         <div className="flex flex-wrap gap-2">
           {existingImages.map((url) => (
             <div key={url} className="relative w-20 h-20 rounded-stitch overflow-hidden border border-thread">
@@ -214,100 +192,36 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-body text-ink/70 mb-1">Top speed (km/h)</label>
-          <input
-            type="number"
-            min="0"
-            value={topSpeed}
-            onChange={(e) => setTopSpeed(e.target.value)}
-            placeholder="65"
-            className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-body text-ink/70 mb-1">Range (km)</label>
-          <input
-            type="number"
-            min="0"
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            placeholder="90"
-            className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-body text-ink/70 mb-1">Battery capacity</label>
-        <input
-          value={batteryCapacity}
-          onChange={(e) => setBatteryCapacity(e.target.value)}
-          placeholder="48V 20Ah"
-          className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-body text-ink/70 mb-1">Charging time (hours)</label>
-        <input
-          type="number"
-          step="0.5"
-          min="0"
-          value={chargingTime}
-          onChange={(e) => setChargingTime(e.target.value)}
-          placeholder="4.5"
-          className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-body text-ink/70 mb-2">Color options</label>
-
-        <div className="flex flex-col gap-2 mb-3">
-          {colorVariants.map((cv, i) => (
-            <div key={i} className="flex items-center gap-3 bg-white/50 border border-thread rounded-stitch p-2">
-              <img
-                src={cv.preview || cv.image_url}
-                alt={cv.color}
-                className="w-12 h-12 rounded-stitch object-cover"
-              />
-              <span className="flex-1 font-body text-sm">{cv.color}</span>
-              <button
-                type="button"
-                onClick={() => removeColorVariant(i)}
-                className="text-madder text-sm font-body"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-2 items-center">
-          <input
-            value={newColorName}
-            onChange={(e) => setNewColorName(e.target.value)}
-            placeholder="Color name, e.g. Red"
-            className="flex-1 px-3 py-2 border border-thread rounded-stitch bg-white font-body text-sm focus:border-madder outline-none"
-          />
-          <label className="px-3 py-2 border border-dashed border-thread rounded-stitch bg-white/50 text-xs font-body cursor-pointer whitespace-nowrap">
-            {newColorFile ? 'Photo picked' : '+ Photo'}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setNewColorFile(e.target.files[0])}
-              className="hidden"
-            />
+      <div className="flex flex-col gap-5 border-t border-thread/70 pt-5">
+        <h2 className="font-display text-xl text-ink">Technical specifications</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="font-body text-sm text-ink/70">
+            Top speed
+            <span className="relative mt-1 block">
+              <input value={specifications.top_speed} onChange={(e) => updateSpecification('top_speed', e.target.value)} placeholder="65" className="w-full px-3 py-3 pr-16 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none" />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-ink/45">km/h</span>
+            </span>
           </label>
-          <button
-            type="button"
-            onClick={addColorVariant}
-            className="px-3 py-2 bg-sage text-white rounded-stitch text-sm font-body"
-          >
-            Add
-          </button>
+          <label className="font-body text-sm text-ink/70">
+            Range
+            <span className="relative mt-1 block">
+              <input value={specifications.range} onChange={(e) => updateSpecification('range', e.target.value)} placeholder="80-100" className="w-full px-3 py-3 pr-16 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none" />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-ink/45">km</span>
+            </span>
+          </label>
+          <label className="font-body text-sm text-ink/70">
+            Battery type
+            <select value={specifications.battery_type} onChange={(e) => updateSpecification('battery_type', e.target.value)} className="mt-1 w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none">
+              <option value="">Choose battery type</option>
+              <option value="Lithium">Lithium</option>
+              <option value="Lead Acid">Lead Acid</option>
+            </select>
+          </label>
+          <label className="font-body text-sm text-ink/70 sm:col-span-2">
+            Other specs
+            <textarea value={specifications.other_specs} onChange={(e) => updateSpecification('other_specs', e.target.value)} rows={3} placeholder="Digital Meter, LED Headlight, Alloy Wheels, USB Charging Port" className="mt-1 w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none" />
+            <span className="mt-1 block text-xs text-ink/50">Separate each item with a comma.</span>
+          </label>
         </div>
       </div>
 
