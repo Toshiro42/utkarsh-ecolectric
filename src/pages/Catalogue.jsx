@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
 import backgroundArt from '../assets/imagefinal.png'
+import Navbar from '../components/Navbar'
 
 export default function Catalogue() {
   const [products, setProducts] = useState([])
@@ -30,25 +31,9 @@ export default function Catalogue() {
 
   return (
     <div className="catalogue-page min-h-screen bg-wool text-ink">
-      <img className="reference-background" src={backgroundArt} alt="" aria-hidden="true" />
-      <header className="catalogue-header">
-        <div className="mx-auto max-w-6xl px-5 pb-10 pt-12 text-center sm:px-8 sm:pb-12 sm:pt-16">
-          <h1 className="font-display text-4xl leading-none text-ink sm:text-6xl">
-            {import.meta.env.VITE_SHOP_NAME || 'Crochet Gallery'}
-          </h1>
-        </div>
-        <div className="yarn-divider" aria-hidden="true">
-          <svg width="100%" height="30" viewBox="0 0 200 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0 15 C 18 4, 30 26, 50 15 S 82 4, 100 15 S 132 26, 150 15 S 182 4, 200 15"
-              stroke="#65001E"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-      </header>
+      <Navbar />
+      
+      
 
       <nav className="relative z-10 max-w-6xl mx-auto px-5 pt-7 sm:px-8 sm:pt-9">
         <div className="flex flex-col gap-4 border-b border-thread/70 pb-5 sm:flex-row sm:items-center sm:justify-between">

@@ -4,19 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-              wool: '#FFE9EC',      // soft blush background
-              ink: '#2B2B2B',       // near-black text
-              madder: '#65001E',    // deep maroon, primary accent
-              sage: '#B05D76',      // dusty rose, secondary accent
-              mustard: '#FFBACF',   // pink highlight
-              thread: '#F0C9D2',    // muted pink for borders/dividers
-            },
+        wool: '#0A0F0C',       // near-black green-tinted background
+        ink: '#F5F7F6',        // near-white text
+        madder: '#22C55E',     // eco green, primary accent/CTA/price
+        sage: '#6B7A72',       // muted grey-green, secondary text/labels
+        mustard: '#16211B',    // dark surface, used for pill/tag backgrounds
+        thread: '#1A2620',     // dark border/divider color
+      },
       fontFamily: {
-        display: ['"Fraunces"', 'serif'],
+        display: ['"Poppins"', 'sans-serif'],
         body: ['"Inter"', 'sans-serif'],
       },
       borderRadius: {
-        stitch: '2px',
+        stitch: '10px',
       },
     },
   },

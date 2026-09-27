@@ -1,16 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  min-width: 320px;
-  background-color: #f5e9e4;
-  color: #2B2B2B;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(101, 0, 30, 0.025) 0, rgba(101, 0, 30, 0.025) 1px, transparent 1px, transparent 5px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 7px);
+  background-color: #0A0F0C;
+  color: #F5F7F6;
+}
+
+:focus-visible {
+  outline: 2px solid #22C55E;
+  outline-offset: 2px;
 }
 
 button,
