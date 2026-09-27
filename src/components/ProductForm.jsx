@@ -16,7 +16,9 @@ export default function ProductForm({ existing, onDone, onCancel }) {
   const [range, setRange] = useState(existing?.range_km || '')
   const [batteryCapacity, setBatteryCapacity] = useState(existing?.battery_capacity || '')
   const [chargingTime, setChargingTime] = useState(existing?.charging_time_hours || '')
-  const [colorsText, setColorsText] = useState((existing?.colors || []).join(', '))
+  const [colorVariants, setColorVariants] = useState(existing?.color_variants || [])
+  const [newColorName, setNewColorName] = useState('')
+  const [newColorFile, setNewColorFile] = useState(null)
 
   const [existingImages, setExistingImages] = useState(existing?.image_urls || [])
   const [newFiles, setNewFiles] = useState([])
@@ -43,6 +45,20 @@ export default function ProductForm({ existing, onDone, onCancel }) {
     setNewFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
+  function addColorVariant() {
+    if (!newColorName.trim() || !newColorFile) return
+    setColorVariants((prev) => [
+      ...prev,
+      { color: newColorName.trim(), file: newColorFile, preview: URL.createObjectURL(newColorFile) },
+    ])
+    setNewColorName('')
+    setNewColorFile(null)
+  }
+
+  function removeColorVariant(index) {
+    setColorVariants((prev) => prev.filter((_, i) => i !== index))
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)
@@ -65,10 +81,24 @@ export default function ProductForm({ existing, onDone, onCancel }) {
       }
 
       const image_urls = [...existingImages, ...uploadedUrls]
-      const colors = colorsText
-        .split(',')
-        .map((c) => c.trim())
-        .filter(Boolean)
+
+      const uploadedColorVariants = []
+      for (const cv of colorVariants) {
+        if (cv.image_url) {
+          uploadedColorVariants.push({ color: cv.color, image_url: cv.image_url })
+          continue
+        }
+        const ext = cv.file.name.split('.').pop()
+        const path = `${crypto.randomUUID()}.${ext}`
+        const { error: colorUploadError } = await supabase.storage
+          .from('vehicle-images')
+          .upload(path, cv.file)
+        if (colorUploadError) throw colorUploadError
+        const { data: colorPublicUrl } = supabase.storage
+          .from('vehicle-images')
+          .getPublicUrl(path)
+        uploadedColorVariants.push({ color: cv.color, image_url: colorPublicUrl.publicUrl })
+      }
 
       const payload = {
         name,
@@ -82,7 +112,7 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         range_km: range ? Number(range) : null,
         battery_capacity: batteryCapacity.trim() || null,
         charging_time_hours: chargingTime ? Number(chargingTime) : null,
-        colors,
+        color_variants: uploadedColorVariants,
       }
 
       if (existing) {
@@ -219,18 +249,66 @@ export default function ProductForm({ existing, onDone, onCancel }) {
         />
       </div>
 
-      
-
       <div>
-        <label className="block text-sm font-body text-ink/70 mb-1">
-          Available colors (comma separated)
-        </label>
+        <label className="block text-sm font-body text-ink/70 mb-1">Charging time (hours)</label>
         <input
-          value={colorsText}
-          onChange={(e) => setColorsText(e.target.value)}
-          placeholder="Red, Black, White"
+          type="number"
+          step="0.5"
+          min="0"
+          value={chargingTime}
+          onChange={(e) => setChargingTime(e.target.value)}
+          placeholder="4.5"
           className="w-full px-3 py-3 border border-thread rounded-stitch bg-white font-body text-base focus:border-madder outline-none"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-body text-ink/70 mb-2">Color options</label>
+
+        <div className="flex flex-col gap-2 mb-3">
+          {colorVariants.map((cv, i) => (
+            <div key={i} className="flex items-center gap-3 bg-white/50 border border-thread rounded-stitch p-2">
+              <img
+                src={cv.preview || cv.image_url}
+                alt={cv.color}
+                className="w-12 h-12 rounded-stitch object-cover"
+              />
+              <span className="flex-1 font-body text-sm">{cv.color}</span>
+              <button
+                type="button"
+                onClick={() => removeColorVariant(i)}
+                className="text-madder text-sm font-body"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2 items-center">
+          <input
+            value={newColorName}
+            onChange={(e) => setNewColorName(e.target.value)}
+            placeholder="Color name, e.g. Red"
+            className="flex-1 px-3 py-2 border border-thread rounded-stitch bg-white font-body text-sm focus:border-madder outline-none"
+          />
+          <label className="px-3 py-2 border border-dashed border-thread rounded-stitch bg-white/50 text-xs font-body cursor-pointer whitespace-nowrap">
+            {newColorFile ? 'Photo picked' : '+ Photo'}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setNewColorFile(e.target.files[0])}
+              className="hidden"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={addColorVariant}
+            className="px-3 py-2 bg-sage text-white rounded-stitch text-sm font-body"
+          >
+            Add
+          </button>
+        </div>
       </div>
 
       <div>
