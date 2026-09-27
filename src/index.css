@@ -143,18 +143,42 @@ a {
 }
 
 .site-logo {
-  width: 80px;
-  height: 80px;
+  width: 52px;
+  height: 46px;
   object-fit: contain;
   position: relative;
-  top: px;      /* negative = moves up, positive = moves down */
-  left: 0px;     /* negative = moves left, positive = moves right */
-  z-index: 1;    /* higher number = sits on top of things with lower numbers */
-  order: -1;      /* -1 = show before the text, 1 = show after the text */
+  top: 12px;
+  left: 0;
+  z-index: 1;
+  order: -1;
+  margin-right: -10px;
+  opacity: 0.9;
 }
 
 .site-logo-wrapper {
   display: flex;
   align-items: center;
-  gap: px;      /* space between logo and text, in pixels */
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.site-wordmark {
+  position: relative;
+  top: 10px;
+  z-index: 2;
+  color: #F5F7F6;
+}
+
+@media (max-width: 767px) {
+  .site-logo {
+    width: 46px;
+    height: 42px;
+    margin-right: -8px;
+    top: 12px;
+  }
+
+  .site-wordmark {
+    top: 9px;
+  }
 }
