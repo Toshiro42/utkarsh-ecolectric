@@ -48,9 +48,9 @@ export default function ProductCard({ product }) {
             to={`/product/${product.id}`}
             aria-label="More details"
             title="More details"
-            className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-sage text-wool transition-colors hover:bg-madder"
+            className="product-card-action flex h-10 sm:h-14 min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-sage text-wool transition-colors hover:bg-madder"
           >
-            <span className="hidden sm:inline">More details</span>
+            <span className="hidden sm:inline text-base">More details</span>
             <span className="sm:hidden text-xs">More</span>
           </Link>
 
@@ -60,9 +60,9 @@ export default function ProductCard({ product }) {
             rel="noopener noreferrer"
             aria-label="WhatsApp"
             title="WhatsApp"
-            className="product-card-action flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-madder text-wool transition-colors hover:opacity-90"
+            className="product-card-action flex h-10 w-10 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-full bg-madder text-wool transition-colors hover:opacity-90"
           >
-            <FaWhatsapp className="text-2xl" />
+            <FaWhatsapp className="text-xl sm:text-3xl" />
           </a>
 
         </div>
