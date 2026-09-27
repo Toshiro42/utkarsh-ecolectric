@@ -1,58 +1,30 @@
-# Crochet Catalogue
+# Utkarsh Ecolectric
 
-A static React catalogue site with a private `/admin` panel. No checkout — each
-product has "Order on WhatsApp" and "DM on Instagram" buttons instead.
+An online catalogue and enquiry platform for Utkarsh Ecolectric, an electric vehicle dealership offering electric scooters and e-rickshaws.
 
-## 1. Set up Supabase (free)
+## What this is
 
-1. Create a project at supabase.com.
-2. Go to **SQL Editor > New query**, paste in everything from `supabase/schema.sql`, and run it.
-3. Go to **Storage**, create a new bucket named exactly `product-images`, and mark it **Public**.
-4. Go to **Authentication > Users > Add user**, and create one user with your mom's
-   email and a password. This is the only login the admin page will accept.
-5. Go to **Project Settings > API** and copy the **Project URL** and **anon public key**.
+Utkarsh Ecolectric's website is a digital showroom — customers can browse the full range of electric vehicles on offer, view detailed specifications and photos for each model, and reach out directly over WhatsApp to enquire about pricing, availability, or booking a purchase. There is no online payment or checkout; every enquiry is handled personally by the dealership through WhatsApp, keeping the buying process simple and direct.
 
-## 2. Configure the app
+## What customers can do
 
-Copy `.env.example` to `.env` and fill in:
+- Browse all available scooters and e-rickshaws in a clean, categorized catalogue
+- View each vehicle's photos, price, and full technical specifications (top speed, range, battery type, and other features) on a dedicated product page
+- Contact the dealership instantly via WhatsApp, with the vehicle's name and price pre-filled in the message
+- Find the dealership's location, phone number, and email on a dedicated Contact page
+- Browse comfortably on any device — desktop or mobile
 
-```
-VITE_SUPABASE_URL=          # from Supabase Project Settings > API
-VITE_SUPABASE_ANON_KEY=     # from Supabase Project Settings > API
-VITE_WHATSAPP_NUMBER=       # e.g. 9199XXXXXXX, no + or spaces
-VITE_INSTAGRAM_HANDLE=      # e.g. yourshophandle
-VITE_SHOP_NAME=             # shown as the site title
-```
+## How the dealership manages listings
 
-## 3. Run it locally
+The dealership team can independently add, edit, and remove vehicles from the catalogue through a private admin panel — no technical or coding knowledge required. Each listing can include multiple photos, a demo video link, pricing, category, and a full specifications sheet, all filled in through simple forms. Vehicles can also be temporarily hidden from the public site (for example, if sold out) without deleting them.
 
-```
-npm install
-npm run dev
-```
+## Look and feel
 
-Visit `http://localhost:5173` for the catalogue, `http://localhost:5173/admin` for the admin panel.
+The site uses a dark theme with a bright green accent, reflecting Utkarsh Ecolectric's brand identity and its focus on clean, electric mobility.
 
-## 4. Deploy for free (Cloudflare Pages)
+## How it's built
 
-1. Push this project to a GitHub repo.
-2. Go to Cloudflare Pages > Create a project > connect your repo.
-3. Build command: `npm run build`, output directory: `dist`.
-4. Under **Environment variables**, add the same four `VITE_...` variables from your `.env`.
-5. Deploy. You'll get a free `*.pages.dev` URL. Every push to `main` auto-deploys.
-
-## 5. Keep Supabase from pausing (free tier pauses after 7 idle days)
-
-This repo includes `.github/workflows/keep-alive.yml`, which pings Supabase every 3 days.
-To activate it:
-
-1. In your GitHub repo, go to **Settings > Secrets and variables > Actions**.
-2. Add two repository secrets: `SUPABASE_URL` and `SUPABASE_ANON_KEY` (same values as your `.env`).
-3. That's it — GitHub runs the ping automatically. Nothing else to maintain.
-
-## How your mom uses it
-
-She goes to `yoursite.pages.dev/admin`, logs in once with the email/password you set up
-in step 1.4, and can add, edit, or delete products from there — no code, no spreadsheet,
-no file editing. Changes show up on the public site immediately (no rebuild needed,
-since the site fetches live data from Supabase on every page load).
+- **Frontend:** React
+- **Backend / Database:** Supabase (database, authentication, and image storage)
+- **Hosting:** Cloudflare Pages
+- **Ordering:** Direct WhatsApp enquiry, no in-site checkout
