@@ -210,7 +210,11 @@ textarea::placeholder {
   .site-wordmark {
     top: 9px;
   }
+
   .product-card-action {
-  font-size: 0.65rem;
-}
+    font-size: 0.55rem;
+    padding-inline: 0.35rem;
+    min-width: 0;
+    flex: 1;
+  }
 }
