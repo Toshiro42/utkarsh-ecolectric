@@ -207,8 +207,17 @@ textarea::placeholder {
     top: 12px;
   }
 
+  .site-logo-wrapper {
+    position: static;
+  }
+
   .site-wordmark {
-    top: 9px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 26px;
+    white-space: nowrap;
+    margin-left: 0;
   }
 
   .product-card-action {
