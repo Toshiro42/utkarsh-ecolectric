@@ -44,9 +44,26 @@ export default function ProductCard({ product }) {
 
         <div className="product-card-actions flex justify-end gap-2 pt-2">
 
-          <Link to={`/product/${product.id}`} aria-label="More details" title="More details" className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-sage text-wool transition-colors hover:bg-madder"><span>More details</span></Link>
+          <Link
+            to={`/product/${product.id}`}
+            aria-label="More details"
+            title="More details"
+            className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full bg-sage text-wool transition-colors hover:bg-madder"
+          >
+            <span className="hidden sm:inline">More details</span>
+            <span className="sm:hidden text-xs">More</span>
+          </Link>
 
-          <a href={waLink} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp" className="product-card-action flex min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-madder text-madder transition-colors hover:bg-madder hover:text-wool"><FaWhatsapp className="text-base" /><span>WhatsApp</span></a>
+          <a
+            href={waLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            title="WhatsApp"
+            className="product-card-action flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-madder text-wool transition-colors hover:opacity-90"
+          >
+            <FaWhatsapp className="text-2xl" />
+          </a>
 
         </div>
       </div>

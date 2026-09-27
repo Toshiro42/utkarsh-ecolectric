@@ -99,13 +99,13 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-wool">
-      <div className="max-w-5xl mx-auto px-5 pt-6 pb-16">
+      <div className="w-full max-w-5xl min-w-0 mx-auto px-5 pt-6 pb-16 overflow-x-hidden">
         <Link to="/" className="inline-block text-sm font-body text-madder mb-5">
           ← Back to catalogue
         </Link>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-start mb-8">
-          <section aria-label="Product detail photos">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-start mb-8">
+          <section className="min-w-0 w-full" aria-label="Product detail photos">
             <div className="relative aspect-[4/3] overflow-hidden rounded-stitch bg-[#F4F5F1]">
               {displayedImage ? (
                 <img key={displayedImage} src={displayedImage} alt={product.name} className="h-full w-full object-contain p-5 sm:p-10" />
@@ -204,7 +204,7 @@ export default function ProductDetail() {
           >
             <FaWhatsapp className="text-base" /> Order on WhatsApp
           </a>
-          
+
         </div>
       </div>
     </div>

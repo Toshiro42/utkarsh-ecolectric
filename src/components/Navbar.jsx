@@ -17,7 +17,7 @@ export default function Navbar() {
                 <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
                     <span className="site-logo-wrapper">
                         <img src={logo} alt="Utkarsh Ecolectric" className="site-logo" />
-                        <span className="site-wordmark font-display text-lg font-bold text-ink tracking-wide">
+                        <span className="site-wordmark ml-6 font-display text-lg font-bold text-ink tracking-wide">
                             UTKARSH <span className="text-madder">ECOLECTRIC</span>
                         </span>
                     </span>
