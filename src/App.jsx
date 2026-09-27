@@ -5,6 +5,7 @@ import Catalogue from './pages/Catalogue'
 import ProductDetail from './pages/ProductDetail'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import ContactUs from './pages/ContactUs'
 
 function AdminGate() {
   const [session, setSession] = useState(undefined) // undefined = still checking
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/" element={<Catalogue />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/admin" element={<AdminGate />} />
+        <Route path="/contact" element={<ContactUs />} />
       </Routes>
     </BrowserRouter>
   )

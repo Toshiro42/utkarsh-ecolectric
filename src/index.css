@@ -141,3 +141,20 @@ a {
   outline: 2px solid #8C4A3B;
   outline-offset: 2px;
 }
+
+.site-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  position: relative;
+  top: px;      /* negative = moves up, positive = moves down */
+  left: 0px;     /* negative = moves left, positive = moves right */
+  z-index: 1;    /* higher number = sits on top of things with lower numbers */
+  order: -1;      /* -1 = show before the text, 1 = show after the text */
+}
+
+.site-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: px;      /* space between logo and text, in pixels */
+}

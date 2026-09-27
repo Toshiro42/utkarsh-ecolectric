@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
-import backgroundArt from '../assets/imagefinal.png'
 import Navbar from '../components/Navbar'
 
 export default function Catalogue() {
