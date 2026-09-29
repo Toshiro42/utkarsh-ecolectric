@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { FaWhatsapp, FaInstagram } from 'react-icons/fa'
+import { FaWhatsapp } from 'react-icons/fa'
 
 function getYouTubeEmbedUrl(url) {
   try {
@@ -25,11 +25,16 @@ function formatSpecificationValue(key, value) {
   return value
 }
 
+function formatRange(range) {
+  return /km/i.test(range) ? range : `${range} km`
+}
+
 export default function ProductDetail() {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeImage, setActiveImage] = useState(0)
+  const [activeBattery, setActiveBattery] = useState(null)
 
   useEffect(() => {
     async function fetchProduct() {
@@ -78,15 +83,28 @@ export default function ProductDetail() {
   }
 
   const waNumber = import.meta.env.VITE_WHATSAPP_NUMBER
-  const igHandle = import.meta.env.VITE_INSTAGRAM_HANDLE
   const waMessage = encodeURIComponent(
     `Hi! I'm interested in the ${product.name} (₹${product.price}).`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
-  const igLink = `https://ig.me/m/${igHandle}`
 
   const youTubeEmbed = product.video_url ? getYouTubeEmbedUrl(product.video_url) : null
-  const specifications = product.specifications || {}
+  const rangeRows = Object.values(product.price_options || {})
+    .flat()
+    .filter((row) => parseInt(row.range))
+    .sort((a, b) => parseInt(a.range) - parseInt(b.range))
+
+  const clean = (r) => r.range.replace(/\s*km\s*$/i, '').trim()
+  const low = rangeRows.length ? clean(rangeRows[0]) : null
+  const high = rangeRows.length ? clean(rangeRows[rangeRows.length - 1]) : null
+  const autoRange = low ? (low === high ? low : `${low} - ${high}`) : null
+
+  const specifications = {
+    ...(product.specifications || {}),
+    ...(autoRange ? { range: autoRange } : {}),
+  }
+  const batteryKeys = Object.keys(product.price_options || {})
+  const selectedBattery = batteryKeys.includes(activeBattery) ? activeBattery : batteryKeys[0]
   const primarySpecs = [
     ['top_speed', 'Top speed'],
     ['range', 'Range'],
@@ -104,7 +122,7 @@ export default function ProductDetail() {
           ← Back to catalogue
         </Link>
 
-        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-start mb-8">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-start mb-5 lg:mb-8">
           <section className="min-w-0 w-full" aria-label="Product detail photos">
             <div className="relative aspect-[4/3] overflow-hidden rounded-stitch bg-[#F4F5F1]">
               {displayedImage ? (
@@ -135,16 +153,15 @@ export default function ProductDetail() {
           </section>
 
           <div className="min-w-0">
-            <div className="mb-8">
+            <div className="lg:mb-8">
               <span className="inline-block text-xs uppercase tracking-wide text-madder bg-mustard/50 px-2.5 py-1 rounded-full font-body font-semibold mb-2">
                 {product.category}
               </span>
               <h1 className="font-display text-2xl sm:text-3xl text-ink mb-2">{product.name}</h1>
-              <p className="font-display text-2xl text-madder font-medium mb-4">₹{product.price}</p>
             </div>
 
             {primarySpecs.length > 0 && (
-              <aside className="grid gap-3 sm:grid-cols-3" aria-label="Product specifications">
+              <aside className="hidden gap-3 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(120px,1fr))]" aria-label="Product specifications">
                 {primarySpecs.map(([key, label], index) => (
                   <div key={key} className="spec-highlight min-w-0 border-l-2 border-madder/70 bg-thread/30 px-4 py-4" style={{ '--spec-delay': `${index * 90}ms` }}>
                     <span className="block font-body text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/45">{label}</span>
@@ -154,7 +171,7 @@ export default function ProductDetail() {
               </aside>
             )}
             {otherSpecs.length > 0 && (
-              <aside className="mt-6" aria-label="Other specifications">
+              <aside className="mt-6 hidden lg:block" aria-label="Other specifications">
                 <p className="mb-3 font-body text-[10px] font-semibold uppercase tracking-[0.18em] text-madder">Other specifications</p>
                 <ul className="grid gap-x-5 gap-y-2 sm:grid-cols-2">
                   {otherSpecs.map((spec) => (
@@ -165,6 +182,98 @@ export default function ProductDetail() {
             )}
           </div>
         </div>
+
+        {product.price_options && Object.keys(product.price_options).length > 0 && (
+          <div className="mb-8">
+            <p className="mb-3 font-body text-[10px] font-semibold uppercase tracking-[0.18em] text-madder">Pricing</p>
+
+
+            {/* Phone / tablet: tabs + one table */}
+            <div className="lg:hidden">
+              <div className="mb-3 grid grid-cols-2 gap-2 rounded-stitch bg-thread/30 p-1">
+                {batteryKeys.map((battery) => (
+                  <button
+                    key={battery}
+                    type="button"
+                    onClick={() => setActiveBattery(battery)}
+                    className={`rounded-stitch py-2 font-body text-sm font-semibold transition-colors ${battery === selectedBattery ? 'bg-madder text-wool' : 'text-ink/60'
+                      }`}
+                  >
+                    {battery}
+                  </button>
+                ))}
+              </div>
+              <div className="rounded-stitch border border-thread overflow-hidden">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-thread/20">
+                      <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-ink/50 px-4 py-2">Range</th>
+                      <th className="text-right font-body text-xs font-semibold uppercase tracking-wide text-ink/50 px-4 py-2">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {product.price_options[selectedBattery].map((row) => (
+                      <tr key={row.range} className="border-t border-thread/50">
+                        <td className="font-body text-sm text-ink px-4 py-2.5">{formatRange(row.range)}</td>
+                        <td className="font-body text-sm font-semibold text-madder px-4 py-2.5 text-right">₹{row.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* PC: both tables side by side */}
+            <div className="hidden gap-4 lg:grid lg:grid-cols-2">
+              {Object.entries(product.price_options).map(([battery, rows]) => (
+                <div key={battery} className="rounded-stitch border border-thread overflow-hidden">
+                  <p className="bg-mustard/60 px-4 py-2 font-body text-sm font-semibold text-ink">
+                    {battery} battery
+                  </p>
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-thread/20">
+                        <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-ink/50 px-4 py-2">Range</th>
+                        <th className="text-right font-body text-xs font-semibold uppercase tracking-wide text-ink/50 px-4 py-2">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((row) => (
+                        <tr key={row.range} className="border-t border-thread/50">
+                          <td className="font-body text-sm text-ink px-4 py-2.5">{formatRange(row.range)}</td>
+                          <td className="font-body text-sm font-semibold text-madder px-4 py-2.5 text-right">₹{row.price}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {primarySpecs.length > 0 && (
+          <aside className="mb-6 grid gap-3 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] lg:hidden" aria-label="Product specifications">
+            {primarySpecs.map(([key, label], index) => (
+              <div key={key} className="spec-highlight min-w-0 border-l-2 border-madder/70 bg-thread/30 px-4 py-4" style={{ '--spec-delay': `${index * 90}ms` }}>
+                <span className="block font-body text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/45">{label}</span>
+                <strong className="mt-2 block break-words font-display text-base leading-snug text-ink">{formatSpecificationValue(key, specifications[key])}</strong>
+              </div>
+            ))}
+          </aside>
+        )}
+
+        {/* Phone / tablet only: other specs below pricing */}
+        {otherSpecs.length > 0 && (
+          <aside className="mb-8 lg:hidden" aria-label="Other specifications">
+            <p className="mb-3 font-body text-[10px] font-semibold uppercase tracking-[0.18em] text-madder">Other specifications</p>
+            <ul className="grid gap-x-5 gap-y-2 sm:grid-cols-2">
+              {otherSpecs.map((spec) => (
+                <li key={spec} className="border-b border-thread/70 py-2 font-body text-sm text-ink/75">{spec}</li>
+              ))}
+            </ul>
+          </aside>
+        )}
 
         {youTubeEmbed && (
           <div className="aspect-video w-full rounded-stitch overflow-hidden mb-6">
@@ -204,7 +313,6 @@ export default function ProductDetail() {
           >
             <FaWhatsapp className="text-base" /> Order on WhatsApp
           </a>
-
         </div>
       </div>
     </div>
