@@ -39,7 +39,12 @@ export default function ProductCard({ product }) {
           </h3>
         </Link>
         <div className="product-card-meta mt-auto flex items-end justify-between border-t border-thread/70 pt-4">
-          <span className="product-card-price font-display text-2xl text-madder">₹{product.price}</span>
+          <div className="flex flex-col">
+  <span className="font-body text-[10px] font-semibold uppercase tracking-[0.15em] text-ink/45 sm:text-xs">
+    Starting from
+  </span>
+  <span className="product-card-price font-display text-2xl text-madder">₹{product.price}</span>
+</div>
         </div>
 
         <div className="product-card-actions flex justify-end gap-2 pt-2">
