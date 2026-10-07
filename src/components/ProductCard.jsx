@@ -5,7 +5,7 @@ export default function ProductCard({ product }) {
   const waNumber = import.meta.env.VITE_WHATSAPP_NUMBER
 
   const waMessage = encodeURIComponent(
-    `Hi! I'm interested in the ${product.name} (₹${product.price}).`
+    `Hi! I'm interested in the ${product.name}.`
   )
   const waLink = `https://wa.me/${waNumber}?text=${waMessage}`
 
