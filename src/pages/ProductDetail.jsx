@@ -97,7 +97,7 @@ export default function ProductDetail() {
   const clean = (r) => r.range.replace(/\s*km\s*$/i, '').trim()
   const low = rangeRows.length ? clean(rangeRows[0]) : null
   const high = rangeRows.length ? clean(rangeRows[rangeRows.length - 1]) : null
-  const autoRange = low ? (low === high ? low : `${low} - ${high}`) : null
+  const autoRange = low ? (low === high ? low : `${low} to ${high}`) : null
 
   const specifications = {
     ...(product.specifications || {}),
