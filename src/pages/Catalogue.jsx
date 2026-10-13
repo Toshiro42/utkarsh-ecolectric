@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar'
 export default function Catalogue() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [sortOrder, setSortOrder] = useState('default')
+  const [sortOrder, setSortOrder] = useState('price-low-high')
 
   useEffect(() => {
     async function fetchProducts() {
