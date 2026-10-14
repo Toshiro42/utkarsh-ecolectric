@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
 import Navbar from '../components/Navbar'
+import PhotoSlideshow from '../components/PhotoSlideshow'
 
 export default function Catalogue() {
   const [products, setProducts] = useState([])
@@ -45,12 +46,13 @@ export default function Catalogue() {
   return (
     <div className="catalogue-page min-h-screen bg-wool text-ink">
       <Navbar />
+      <PhotoSlideshow />
 
       {/* Catalogue header and sorting dropdown */}
       <nav className="relative z-10 max-w-6xl mx-auto px-5 pt-7 sm:px-8 sm:pt-9">
         <div className="flex flex-col gap-4 border-b border-thread/70 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-madder">
+            <p className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-[#39FF14]">
               Collection
             </p>
           </div>
