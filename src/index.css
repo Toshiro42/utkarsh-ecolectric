@@ -1214,3 +1214,40 @@ textarea::placeholder {
     row-gap: 18px;
   }
 }
+/* More generous spacing between scooter cards on mobile */
+@media (max-width: 767px) {
+  .catalogue-grid,
+  .product-grid,
+  .products-grid {
+    column-gap: 20px !important;
+    row-gap: 26px !important;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+/* Mobile catalogue: use more of the available screen width */
+@media (max-width: 767px) {
+  .catalogue-grid,
+  .product-grid,
+  .products-grid {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    box-sizing: border-box;
+    column-gap: 12px !important;
+    row-gap: 26px !important;
+  }
+}
+/* Green tap feedback for mobile navigation */
+@media (hover: none) and (pointer: coarse) {
+  .site-nav-link.tap-active {
+    background: #39ff14 !important;
+    border-color: #39ff14 !important;
+    color: #071008 !important;
+    box-shadow: 0 0 14px rgba(57, 255, 20, 0.3);
+    transition: background 180ms ease, color 180ms ease;
+  }
+}
