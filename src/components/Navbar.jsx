@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import logo from '../assets/main logo.png'
 
 const links = [
@@ -15,17 +15,22 @@ const links = [
 
 function NavLink({ item }) {
   const [active, setActive] = useState(false)
+  const timerRef = useRef(null)
+
+  const handleTap = () => {
+    setActive(true)
+
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      setActive(false)
+    }, 2000)
+  }
 
   useEffect(() => {
-    if (!active) return
-
-    const timer = setTimeout(() => setActive(false), 2000)
-    return () => clearTimeout(timer)
-  }, [active])
+    return () => clearTimeout(timerRef.current)
+  }, [])
 
   const classes = `site-nav-link whitespace-nowrap ${active ? 'tap-active' : ''}`
-
-  const handleTap = () => setActive(true)
 
   if (item.external) {
     return (
@@ -34,7 +39,7 @@ function NavLink({ item }) {
         href={item.href}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={handleTap}
+        onPointerDown={handleTap}
       >
         {item.label}
       </a>
@@ -45,7 +50,7 @@ function NavLink({ item }) {
     <Link
       className={classes}
       to={item.href}
-      onClick={handleTap}
+      onPointerDown={handleTap}
     >
       {item.label}
     </Link>

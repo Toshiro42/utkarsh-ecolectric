@@ -1251,3 +1251,20 @@ textarea::placeholder {
     transition: background 180ms ease, color 180ms ease;
   }
 }
+@media (hover: none) and (pointer: coarse) {
+  .site-nav-link:hover {
+    background: rgba(18, 29, 21, 0.78);
+    border-color: rgba(100, 145, 108, 0.25);
+    color: #e8eee9;
+    box-shadow: none;
+  }
+
+  .site-nav-link.tap-active,
+  .site-nav-link.tap-active:hover,
+  .site-nav-link.tap-active:focus {
+    background: #39ff14 !important;
+    border-color: #39ff14 !important;
+    color: #071008 !important;
+    box-shadow: 0 0 14px rgba(57, 255, 20, 0.3);
+  }
+}
