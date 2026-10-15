@@ -1042,3 +1042,175 @@ textarea::placeholder {
     right: 6px;
   }
 }
+/* ===== UTKARSH ECOLECTRIC: PREMIUM HEADER ===== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      rgba(57, 255, 20, 0.09),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 100% 100%,
+      rgba(30, 120, 55, 0.12),
+      transparent 38%
+    ),
+    linear-gradient(115deg, #101811 0%, #080d09 48%, #0c140e 100%);
+  border-bottom: 1px solid rgba(57, 255, 20, 0.20);
+  box-shadow: 0 5px 24px rgba(0, 0, 0, 0.22);
+}
+
+.site-header-inner {
+  background: transparent;
+}
+
+.site-navigation {
+  background: transparent;
+  position: relative;
+}
+
+/* Subtle green accent beneath the navigation */
+.site-navigation::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(180px, 35%);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(57, 255, 20, 0.65),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.site-nav-link {
+  background: rgba(18, 29, 21, 0.78);
+  border-color: rgba(100, 145, 108, 0.25);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.site-nav-link:hover,
+.site-nav-link:focus-visible {
+  background: rgba(35, 65, 39, 0.85);
+  border-color: rgba(57, 255, 20, 0.65);
+  color: #39ff14;
+}
+
+/* ===== SHORTER, UNCROPPED BANNER ===== */
+
+.photo-slideshow {
+  width: 100%;
+  height: clamp(280px, 39vw, 560px) !important;
+  aspect-ratio: auto;
+  overflow: hidden;
+  background: #080d09;
+}
+
+.slideshow-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center;
+}
+
+/* ===== MOBILE HEADER AND BANNER ===== */
+
+@media (max-width: 767px) {
+  .site-header-inner {
+    background: transparent;
+  }
+
+  .site-navigation {
+    background: transparent;
+  }
+
+  .photo-slideshow {
+    height: clamp(185px, 55vw, 320px) !important;
+    aspect-ratio: auto;
+  }
+
+  .slideshow-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-link {
+    transition: none;
+  }
+}
+/* Shift the header gradient toward the right */
+.site-header {
+  background:
+    radial-gradient(
+      ellipse at 100% 50%,
+      rgba(57, 255, 20, 0.13) 0%,
+      rgba(30, 120, 55, 0.07) 28%,
+      transparent 58%
+    ),
+    linear-gradient(
+      110deg,
+      #080d09 0%,
+      #0a100b 55%,
+      #101a12 100%
+    );
+}
+
+/* Remove the thin green line under the navigation */
+.site-navigation::after {
+  display: none !important;
+  content: none !important;
+}
+/* Subtle layered electric-green gradient on the right */
+.site-header {
+  background:
+    radial-gradient(
+      ellipse at 100% 15%,
+      rgba(57, 255, 20, 0.13) 0%,
+      rgba(28, 110, 45, 0.08) 24%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse at 82% 100%,
+      rgba(26, 83, 39, 0.16) 0%,
+      transparent 42%
+    ),
+    linear-gradient(
+      110deg,
+      #080d09 0%,
+      #0a100b 48%,
+      #101b12 100%
+    );
+
+  border-bottom: 1px solid rgba(57, 255, 20, 0.18);
+}
+
+/* Keep navigation backgrounds transparent */
+.site-header-inner,
+.site-navigation {
+  background: transparent;
+}
+/* Improve scooter catalogue spacing on mobile */
+@media (max-width: 767px) {
+  .catalogue-grid,
+  .product-grid,
+  .products-grid {
+    column-gap: 14px;
+    row-gap: 18px;
+  }
+}
