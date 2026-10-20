@@ -1,11 +1,21 @@
 import { useState } from 'react'
 import Navbar from '../components/Navbar'
 
-// All 18 customer photos in public/customers/
 const customerPhotos = Array.from(
-  { length: 18 },
-  (_, index) => `/customers/customer-${index + 1}.jpg`
+  { length: 102 },
+  (_, index) => index + 1
 )
+
+const extensions = [
+  'jpg',
+  'jpeg',
+  'png',
+  'webp',
+  'JPG',
+  'JPEG',
+  'PNG',
+  'WEBP',
+]
 
 export default function HappyCustomers() {
   return (
@@ -25,10 +35,10 @@ export default function HappyCustomers() {
         </p>
 
         <div className="customer-photo-grid">
-          {customerPhotos.map((src, index) => (
+          {customerPhotos.map((number, index) => (
             <CustomerPhoto
-              key={src}
-              src={src}
+              key={number}
+              number={number}
               index={index}
             />
           ))}
@@ -38,18 +48,27 @@ export default function HappyCustomers() {
   )
 }
 
-function CustomerPhoto({ src, index }) {
+function CustomerPhoto({ number, index }) {
+  const [extensionIndex, setExtensionIndex] = useState(0)
   const [visible, setVisible] = useState(true)
 
   if (!visible) return null
+
+  const src = `/customers/customer-${number}.${extensions[extensionIndex]}`
 
   return (
     <img
       className="customer-photo"
       src={src}
-      alt={`Utkarsh Ecolectric customer delivery ${index + 1}`}
-      onError={() => setVisible(false)}
+      alt={`Utkarsh Ecolectric customer delivery ${number}`}
       loading={index < 6 ? 'eager' : 'lazy'}
+      onError={() => {
+        if (extensionIndex < extensions.length - 1) {
+          setExtensionIndex((current) => current + 1)
+        } else {
+          setVisible(false)
+        }
+      }}
     />
   )
 }
